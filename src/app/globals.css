@@ -1,0 +1,310 @@
+@import "tailwindcss";
+
+:root {
+  --evion-turquoise: #40E0D0;
+  --evion-white: #FFFFFF;
+  --evion-black: #000000;
+
+  --background: #000000;
+  --foreground: #FFFFFF;
+  --primary: #40E0D0;
+  --primary-hover: #FFFFFF;
+  --secondary: #111827;
+  --muted: #64748B;
+  --border: #1E293B;
+  --surface: #0A0F14;
+  --dark: #000000;
+  --card: #05080A;
+  --card-hover: #0B131B;
+  --electric-accent: #40E0D0;
+  --electric-hover: #40E0D0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #40E0D0;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FFFFFF;
+}
+
+/* Selection */
+::selection {
+  background: #40E0D0;
+  color: #000000;
+}
+
+/* Glow effects */
+.glow-accent {
+  box-shadow: 0 0 30px -5px rgba(64, 224, 208, 0.4);
+}
+
+.glow-text {
+  text-shadow: 0 0 20px rgba(64, 224, 208, 0.45);
+}
+
+/* Grid background helper */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+}
+
+.bg-radial-gradient {
+  background: radial-gradient(circle at 50% 0%, rgba(64, 224, 208, 0.18) 0%, transparent 60%);
+}
+
+/* Energy line animation */
+@keyframes energyPulse {
+  0% {
+    stroke-dashoffset: 1000;
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.3;
+  }
+}
+
+@keyframes energyFlowSmooth {
+  from {
+    stroke-dashoffset: 240;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-energy-line {
+  stroke-dasharray: 80 120;
+  animation: energyPulse 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-energy-flow {
+  stroke-dasharray: 36 200;
+  animation: energyFlowSmooth 4s linear infinite;
+}
+
+/* Card hover transitions */
+.hover-card-border {
+  transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hover-card-border:hover {
+  border-color: #40E0D0;
+  box-shadow: 0 10px 30px -10px rgba(64, 224, 208, 0.25);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Custom Leaflet Map & EVION Markers */
+.leaflet-container {
+  font-family: var(--font-sans), system-ui, sans-serif !important;
+  background: #f8fafc !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(8px);
+  padding: 3px 8px !important;
+  border-radius: 8px 0 0 0 !important;
+  font-size: 10px !important;
+  color: #334155 !important;
+}
+
+.leaflet-control-attribution a {
+  color: #0284c7 !important;
+  text-decoration: none !important;
+}
+
+/* Individual Station Pin */
+.evion-station-marker-wrap {
+  background: transparent;
+  border: none;
+}
+
+.evion-station-pin {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.evion-station-pin:hover {
+  transform: scale(1.22);
+}
+
+.evion-station-pin.selected {
+  transform: scale(1.28);
+}
+
+.evion-station-pin .pin-core {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #40E0D0;
+  border: 2px solid #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+  box-shadow: 0 4px 14px rgba(64, 224, 208, 0.6), 0 2px 6px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+  transition: all 0.2s ease;
+}
+
+.evion-station-pin.selected .pin-core {
+  background-color: #000000;
+  color: #40E0D0;
+  border-color: #40E0D0;
+  box-shadow: 0 0 22px #40E0D0;
+}
+
+.evion-station-pin .pin-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid #40E0D0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.evion-station-pin .pin-ring.pulse,
+.evion-station-pin.selected .pin-ring {
+  opacity: 0.8;
+  animation: markerPing 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.evion-station-pin .ultra-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #000000;
+  color: #40E0D0;
+  border: 1px solid #40E0D0;
+  font-size: 8px;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+@keyframes markerPing {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  75%, 100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Cluster Marker */
+.evion-cluster-marker-wrap {
+  background: transparent;
+  border: none;
+}
+
+.evion-cluster-marker {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.evion-cluster-marker:hover {
+  transform: scale(1.18);
+}
+
+.evion-cluster-marker .cluster-inner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #40E0D0 0%, #22B2A3 100%);
+  border: 2.5px solid #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+  box-shadow: 0 6px 18px rgba(64, 224, 208, 0.55), 0 2px 6px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+}
+
+.evion-cluster-marker .cluster-count {
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+  font-family: var(--font-mono);
+}
+
+.evion-cluster-marker .cluster-label {
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  opacity: 0.85;
+}
+
+.evion-cluster-marker .pulse-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid #40E0D0;
+  animation: markerPing 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+

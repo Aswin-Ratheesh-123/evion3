@@ -1,0 +1,20 @@
+[
+  {
+    "fullName": "Arjun Mehra",
+    "email": "arjun.mehra@example.com",
+    "phone": "+91 98230 45678",
+    "companyName": "Mehra Energy Infra Pvt Ltd",
+    "city": "Jaipur",
+    "state": "Rajasthan",
+    "preferredInvestmentRange": "₹25–50 Lakhs",
+    "proposedLocation": "NH-48 Jaipur-Delhi Highway, 5,000 sq ft commercial land adjacent to retail complex",
+    "businessExperience": "14 years in commercial retail distribution & solar rooftop projects",
+    "additionalMessage": "We have 250 kVA sanctioned power and wish to deploy 4x 120kW DC fast charging guns.",
+    "ipAddress": "::1",
+    "userAgent": "node",
+    "id": "FRN-795208-4MESJ",
+    "status": "PENDING_REVIEW",
+    "createdAt": "2026-10-20T19:33:15.208Z",
+    "updatedAt": "2026-10-20T19:33:15.208Z"
+  }
+]
