@@ -97,7 +97,7 @@ export const footerLinks = {
   resources: [
     { label: 'FAQ Knowledge Base', href: '/faq' },
     { label: 'System Status', href: '/locations' },
-    { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms of Service', href: '/terms' },
+    { label: 'Privacy Policy', href: '/privacy-policy' },
+    { label: 'Terms & Conditions', href: '/terms-and-conditions' },
   ],
 };

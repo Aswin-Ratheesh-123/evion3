@@ -420,7 +420,7 @@ export const ChargeClubHero3D: React.FC = () => {
             className="mt-3 sm:mt-6 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm font-mono tracking-[0.12em] sm:tracking-[0.25em] uppercase text-[#40E0D0]/90 px-2 max-w-full"
           >
             <span className="flex items-center gap-2 text-center">
-              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#40E0D0] shrink-0" />
+             
               <span className="text-[11px] sm:text-xs md:text-sm font-medium">POWER YOUR FUTURE WITH EVION.</span>
             </span>
             <span className="hidden md:inline text-[#FFFFFF]/30 mx-2">•</span>
@@ -479,20 +479,7 @@ export const ChargeClubHero3D: React.FC = () => {
               Partner with EVION to bring intelligent electric vehicle charging solutions to more locations. Join our growing network and explore franchise opportunities in the expanding electric mobility industry.
             </p>
 
-            <div
-              ref={headlineBadgesRef}
-              className="mt-5 sm:mt-8 flex flex-wrap items-center gap-2.5 sm:gap-4 pointer-events-auto opacity-0"
-              style={{ opacity: 0 }}
-            >
-              <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-[#FFFFFF]/5 backdrop-blur-md border border-[#40E0D0]/20 text-[11px] sm:text-xs font-mono text-[#40E0D0]">
-                <Shield className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#40E0D0]" />
-                <span>350 KW TURNKEY DEPLOYMENT</span>
-              </div>
-              <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-[#FFFFFF]/5 backdrop-blur-md border border-[#FFFFFF]/10 text-[11px] sm:text-xs font-mono text-[#FFFFFF]/80">
-                <Award className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-[#40E0D0]" />
-                <span>COMMERCIAL REVENUE SHARE</span>
-              </div>
-            </div>
+           
           </div>
         </div>
 
