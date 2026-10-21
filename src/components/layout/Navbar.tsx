@@ -4,9 +4,53 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { Menu, X, ArrowUpRight } from 'lucide-react';
 import { navLinks } from '@/data/navigation';
+
+const menuOverlayVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: -8,
+    transition: {
+      duration: 0.2,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.35,
+      ease: [0.16, 1, 0.3, 1] as const,
+      when: 'beforeChildren',
+      staggerChildren: 0.045,
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -8,
+    transition: {
+      duration: 0.22,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+};
+
+const menuItemVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    x: -20,
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.32,
+      ease: [0.16, 1, 0.3, 1] as const,
+    },
+  },
+};
 
 export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -14,11 +58,42 @@ export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const lastScrollYRef = useRef(0);
+  const mobileMenuOpenRef = useRef(mobileMenuOpen);
 
+  // Keep ref synchronized with state to avoid stale closures in event listeners
+  useEffect(() => {
+    mobileMenuOpenRef.current = mobileMenuOpen;
+  }, [mobileMenuOpen]);
+
+  // Safe background scroll lock on mobile / iOS
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const scrollY = window.scrollY;
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    const originalTouchAction = document.body.style.touchAction;
+
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+
+    return () => {
+      document.documentElement.style.overflow = originalHtmlOverflow;
+      document.body.style.overflow = originalBodyOverflow;
+      document.body.style.touchAction = originalTouchAction;
+      window.scrollTo(0, scrollY);
+    };
+  }, [mobileMenuOpen]);
+
+  // Handle scroll events and navbar visibility
   useEffect(() => {
     lastScrollYRef.current = window.scrollY;
 
     const handleScroll = () => {
+      // Do not recalculate or hide navbar when mobile menu is open
+      if (mobileMenuOpenRef.current) return;
+
       const currentScrollY = window.scrollY;
 
       // Determine transparency threshold
@@ -45,6 +120,17 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close mobile menu on desktop viewport resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024 && mobileMenuOpenRef.current) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Close mobile menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -64,10 +150,12 @@ export const Navbar: React.FC = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 transform ${
-          isVisible ? 'translate-y-0' : '-translate-y-full'
+        className={`fixed top-0 left-0 right-0 z-50 transition-[transform,background-color,border-color,box-shadow,padding] duration-300 transform ${
+          isVisible || mobileMenuOpen ? 'translate-y-0' : '-translate-y-full'
         } ${
-          isScrolled
+          mobileMenuOpen
+            ? 'bg-[#000000] border-b border-[#FFFFFF]/10 py-3 sm:py-5'
+            : isScrolled
             ? 'bg-[#000000]/85 backdrop-blur-md border-b border-[#40E0D0]/20 py-2.5 sm:py-3 shadow-2xl'
             : 'bg-transparent py-3 sm:py-5'
         }`}
@@ -78,6 +166,7 @@ export const Navbar: React.FC = () => {
             <div className="flex items-center justify-start shrink-0">
               <Link
                 href="/"
+                onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center transition-opacity hover:opacity-90 duration-300 focus:outline-none focus:ring-1 focus:ring-[#40E0D0] rounded-lg"
                 aria-label="EVION Home"
               >
@@ -141,6 +230,7 @@ export const Navbar: React.FC = () => {
             <div className="flex lg:hidden items-center justify-end gap-2.5 sm:gap-3 shrink-0">
               <Link
                 href="/#contact"
+                onClick={() => setMobileMenuOpen(false)}
                 className="hidden sm:inline-flex lg:hidden items-center justify-center gap-1.5 px-3.5 sm:px-4 h-8.5 sm:h-9 rounded-full border border-[#40E0D0]/40 text-[#40E0D0] text-[11px] sm:text-xs font-mono font-medium tracking-wider hover:bg-[#40E0D0] hover:text-[#000000] hover:shadow-[0_0_20px_rgba(64,224,208,0.35)] transition-all duration-300 whitespace-nowrap"
               >
                 <span>CONNECT</span>
@@ -149,8 +239,9 @@ export const Navbar: React.FC = () => {
 
               {/* Mobile Menu button */}
               <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 h-8.5 sm:h-9 rounded-full bg-[#FFFFFF]/10 hover:bg-[#FFFFFF]/20 text-[#FFFFFF] border border-[#FFFFFF]/20 transition-all focus:outline-none focus:ring-1 focus:ring-[#40E0D0] cursor-pointer whitespace-nowrap shrink-0"
+                type="button"
+                onClick={() => setMobileMenuOpen((prev) => !prev)}
+                className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 h-8.5 sm:h-9 rounded-full bg-[#FFFFFF]/10 hover:bg-[#FFFFFF]/20 text-[#FFFFFF] border border-[#FFFFFF]/20 transition-all focus:outline-none focus:ring-1 focus:ring-[#40E0D0] cursor-pointer whitespace-nowrap shrink-0 touch-manipulation select-none"
                 aria-label={mobileMenuOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
                 aria-expanded={mobileMenuOpen}
               >
@@ -172,24 +263,28 @@ export const Navbar: React.FC = () => {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, clipPath: 'inset(0% 0% 100% 0%)' }}
-            animate={{ opacity: 1, clipPath: 'inset(0% 0% 0% 0%)' }}
-            exit={{ opacity: 0, clipPath: 'inset(0% 0% 100% 0%)' }}
-            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-40 bg-[#000000]/95 backdrop-blur-xl flex flex-col justify-between pt-28 pb-12 px-8 sm:px-16"
+            key="evion-mobile-menu"
+            variants={menuOverlayVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            style={{
+              WebkitOverflowScrolling: 'touch',
+              willChange: 'opacity, transform',
+              transform: 'translateZ(0)',
+            }}
+            className="fixed inset-0 z-40 h-screen h-[100dvh] w-full max-w-full bg-[#000000] flex flex-col justify-between overflow-y-auto overscroll-contain overflow-x-hidden pt-[calc(env(safe-area-inset-top,0px)+5.5rem)] pb-[calc(env(safe-area-inset-bottom,0px)+2rem)] px-6 sm:px-12 lg:px-16"
           >
-            <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col justify-center">
-              <div className="text-xs font-mono tracking-[0.3em] text-[#40E0D0] uppercase mb-8">
+            <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col justify-center my-auto min-h-max py-4">
+              <div className="text-xs font-mono tracking-[0.3em] text-[#40E0D0] uppercase mb-6 sm:mb-8">
                 NAVIGATION / EVION
               </div>
 
-              <div className="space-y-4 sm:space-y-6">
+              <div className="space-y-3 sm:space-y-6">
                 {navLinks.map((item, idx) => (
                   <motion.div
                     key={idx}
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.08 * idx, duration: 0.4 }}
+                    variants={menuItemVariants}
                   >
                     {(() => {
                       const isSpecial = item.label === 'FRANCHISE' || item.label === 'CHARGE CLUB';
@@ -227,7 +322,7 @@ export const Navbar: React.FC = () => {
               </div>
             </div>
 
-            <div className="max-w-5xl mx-auto w-full pt-8 border-t border-[#FFFFFF]/10 flex flex-col sm:flex-row items-center justify-between text-xs font-mono text-[#FFFFFF]/50 gap-4">
+            <div className="max-w-5xl mx-auto w-full pt-6 sm:pt-8 border-t border-[#FFFFFF]/10 flex flex-col sm:flex-row items-center justify-between text-xs font-mono text-[#FFFFFF]/50 gap-4 mt-auto">
               <div className="flex items-center gap-2">
                 <span className="text-[#FFFFFF]">EVION HIGH-POWER CHARGING INFRASTRUCTURE</span>
               </div>
